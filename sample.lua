@@ -2,7 +2,7 @@
 -- Sample of SlibBME280.lua for W4.00.03
 -- Copyright (c) 2018, Saya
 -- All rights reserved.
--- 2018/09/13 rev.0.01
+-- 2018/09/14 rev.0.02
 -----------------------------------------------
 
 local script_path = function()
@@ -23,16 +23,17 @@ local sea_lvl_press = 1013.25
 -- Filter off
 -- All oversampling x16
 ------------------------
-sensor:setup(sensor_sadr, 3, 0, 0, 4, 4, 4)
-local res, temp, humi, pres, alti = sensor:read(sea_lvl_press)
+local csv_text
+local res = sensor:setup(sensor_sadr, 3, 0, 0, 4, 4, 4)
+local res, temp, humi, pres, alti = sensor:readData(sea_lvl_press)
 
-if res!="OK" then
-	local csv_text = string.format( "%8.2f,%8.2f,%8.2f,%8.2f\n",temp, humi, pres, alti)
+if res=="OK" then
+	csv_text = string.format( "%8.2f,%8.2f,%8.2f,%8.2f\n",temp, humi, pres, alti)
 else
-	local csv_text = res
+	csv_text = res
 end
 
-local file_path = string.format( mydir .. "sample.csv" )
+local file_path = string.format( myDir .. "sample.csv" )
 local fh = io.open(file_path, "a+")
 fh:write(csv_text)
 fh:close()

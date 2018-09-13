@@ -2,7 +2,7 @@
 -- Libraly of BME280 control for W4.00.03
 -- Copyright (c) 2018, Saya
 -- All rights reserved.
--- 2018/09/13 rev.0.05 humidity & setup debug etc.
+-- 2018/09/14 rev.0.06 I2C error debug.
 -----------------------------------------------
 local BME280 = {
 	SADR = 0x76;
@@ -28,10 +28,14 @@ function BME280:wreadt( adr, len )
 	local res, str = fa.i2c{ mode="read", bytes=len, type="string" };
 	local res = fa.i2c{ mode="stop" };
 
-	return res, {str:byte(1, #str)}
+	if res=="OK" then
+		return res, {str:byte(1, #str)}
+	else
+		return res
+	end
 end
 
--- Return temperature in DegC. Output value of Åg51.23Åh equals 51.23 DegC.
+-- Return temperature in DegC. Output value of "51.23" equals 51.23 DegC.
 -- t_fine carries fine temperature as self.TRIM
 function BME280:calibration_T( adc_T )
 	local var1 = (adc_T/16384.0 - self.TRIM.T1/1024.0)
@@ -46,7 +50,7 @@ function BME280:calibration_T( adc_T )
 	return temp
 end
 
-// Return pressure in hPa. Output value of Åg963.86\2Åh equals 963.862 hPa
+-- Return pressure in hPa. Output value of "963.862" equals 963.862 hPa.
 function BME280:calibration_P( adc_P )
 	local var1 = (self.TRIM.t_fine / 2.0) - 64000.0
 	local var2 = var1^2 * self.TRIM.P6 / 32768.0
@@ -72,7 +76,7 @@ function BME280:calibration_P( adc_P )
 	return pres
 end
 
--- Return humidity in %rH. Output value of Åg46.332Åh represents 46.332 %rH
+-- Return humidity in %rH. Output value of "46.332" represents 46.332 %rH.
 function BME280:calibration_H( adc_H )
 	var1 = self.TRIM.t_fine - 76800.0
 	var2 = self.TRIM.H4 * 64.0 + self.TRIM.H5 / 16384.0
@@ -97,7 +101,7 @@ function BME280:readTrim()
 		return x
 	end
 
-	if res!="OK" then
+	if res~="OK" then
 		return res
 	end
 	self.TRIM = {
@@ -165,7 +169,7 @@ end
 function BME280:readData( pres_sea )
 	local res, d = self:wreadt( 0xF7, 8 )
 
-	if res!="OK" then
+	if res~="OK" then
 		return res
 	end
 
