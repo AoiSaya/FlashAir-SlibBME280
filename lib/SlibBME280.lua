@@ -2,7 +2,7 @@
 -- Libraly of BME280 control for W4.00.03
 -- Copyright (c) 2018, Saya
 -- All rights reserved.
--- 2018/09/14 rev.0.06 I2C error debug.
+-- 2018/09/15 rev.0.07 Soft reset.
 -----------------------------------------------
 local BME280 = {
 	SADR = 0x76;
@@ -33,6 +33,14 @@ function BME280:wreadt( adr, len )
 	else
 		return res
 	end
+end
+
+-- BME280 Soft reset
+function BME280:softReset()
+	local res = self:write( 0xE0, 0xB6 )
+	sleep(2)
+
+	return res
 end
 
 -- Return temperature in DegC. Output value of "51.23" equals 51.23 DegC.
@@ -148,6 +156,7 @@ function BME280:setup(sadr, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)
 	local config	= (t_sb   * 2^5) + (filter * 2^2) + spi3w_en
 	local ctrl_hum	= osrs_h
 
+	local res = self:softReset()
 	local res = self:write( 0xF2, ctrl_hum,
 							0xF4, ctrl_meas,
 							0xF5, config
