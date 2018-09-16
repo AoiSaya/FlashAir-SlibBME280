@@ -52,57 +52,33 @@ filter| Filter coefficient
 osrs_t| Temperature oversampling
 --- | ---
 0| Skipped
-<<<<<<< HEAD
-1| oversampling Å~1
-2| oversampling Å~2
-3| oversampling Å~4
-4| oversampling Å~8
-5<br>others| oversampling Å~16
-=======
-1| oversampling √ó1
-2| oversampling √ó2
-3| oversampling √ó4
-4| oversampling √ó8
-5<br>others| oversampling √ó16
->>>>>>> e3c94b8ddc52964550dc91819cb7936a519238cf
+1| oversampling x1
+2| oversampling x2
+3| oversampling x4
+4| oversampling x8
+5<br>others| oversampling x16
 
 **Controls oversampling of pressure data**
 
 osrs_p| Pressure oversampling
 --- | ---
 0| Skipped
-<<<<<<< HEAD
-1| oversampling Å~1
-2| oversampling Å~2
-3| oversampling Å~4
-4| oversampling Å~8
-5<br>others| oversampling Å~16
-=======
-1| oversampling √ó1
-2| oversampling √ó2
-3| oversampling √ó4
-4| oversampling √ó8
-5<br>others| oversampling √ó16
->>>>>>> e3c94b8ddc52964550dc91819cb7936a519238cf
+1| oversampling x1
+2| oversampling x2
+3| oversampling x4
+4| oversampling x8
+5<br>others| oversampling x16
 
 **Controls oversampling of humidity data**
 
 osrs_h| Humidity oversampling
 --- | ---
 0| Skipped
-<<<<<<< HEAD
-1| oversampling Å~1
-2| oversampling Å~2
-3| oversampling Å~4
-4| oversampling Å~8
-5<br>others| oversampling Å~16
-=======
-1| oversampling √ó1
-2| oversampling √ó2
-3| oversampling √ó4
-4| oversampling √ó8
-5<br>others| oversampling √ó16
->>>>>>> e3c94b8ddc52964550dc91819cb7936a519238cf
+1| oversampling x1
+2| oversampling x2
+3| oversampling x4
+4| oversampling x8
+5<br>others| oversampling x16
 
 ## Usage
 
