@@ -2,7 +2,7 @@
 -- Libraly of BME280 control for W4.00.03
 -- Copyright (c) 2018, Saya
 -- All rights reserved.
--- 2018/09/15 rev.0.07 Soft reset.
+-- 2018/09/16 rev.0.08 sea level modified.
 -----------------------------------------------
 local BME280 = {
 	SADR = 0x76;
@@ -43,21 +43,6 @@ function BME280:softReset()
 	return res
 end
 
--- Return temperature in DegC. Output value of "51.23" equals 51.23 DegC.
--- t_fine carries fine temperature as self.TRIM
-function BME280:calibration_T( adc_T )
-	local var1 = (adc_T/16384.0 - self.TRIM.T1/1024.0)
-	local var2 =  var1		* self.TRIM.T2
-	local var3 = (var1/8)^2 * self.TRIM.T3
-	local t_fine = var2 + var3
-	self.TRIM.t_fine = t_fine
-	local temp = t_fine / 5120.0
-	if ( temp<-45 ) then temp=-45 end
-	if ( temp> 85 ) then temp=85  end
-
-	return temp
-end
-
 -- Return pressure in hPa. Output value of "963.862" equals 963.862 hPa.
 function BME280:calibration_P( adc_P )
 	local var1 = (self.TRIM.t_fine / 2.0) - 64000.0
@@ -82,6 +67,21 @@ function BME280:calibration_P( adc_P )
 	end
 
 	return pres
+end
+
+-- Return temperature in DegC. Output value of "51.23" equals 51.23 DegC.
+-- t_fine carries fine temperature as self.TRIM
+function BME280:calibration_T( adc_T )
+	local var1 = (adc_T/16384.0 - self.TRIM.T1/1024.0)
+	local var2 =  var1		* self.TRIM.T2
+	local var3 = (var1/8)^2 * self.TRIM.T3
+	local t_fine = var2 + var3
+	self.TRIM.t_fine = t_fine
+	local temp = t_fine / 5120.0
+	if ( temp<-45 ) then temp=-45 end
+	if ( temp> 85 ) then temp=85  end
+
+	return temp
 end
 
 -- Return humidity in %rH. Output value of "46.332" represents 46.332 %rH.
@@ -185,19 +185,18 @@ function BME280:readData( pres_sea )
 	local pres_raw = (d[1] * 2^12) + (d[2] * 2^4) + (d[3] / 2^4)
 	local temp_raw = (d[4] * 2^12) + (d[5] * 2^4) + (d[6] / 2^4)
 	local humi_raw = (d[7] * 2^8 ) + d[8]
-	local temp	   = self:calibration_T( temp_raw )
 	local pres	   = self:calibration_P( pres_raw )
+	local temp	   = self:calibration_T( temp_raw )
 	local humi	   = self:calibration_H( humi_raw )
-	local alti	   = 0.0
 
-	if( pres_sea ) then
-		local kt   = temp + 273.15
-		local p1   = 1013.25
-		local dpow = 1.0 / 5.256
-		alti = ((p1/pres)^dpow - (p1/pres_sea)^dpow) * kt / 0.0065
-	end
+	pres_sea = pres_sea or 1013.25
+	local kt   = temp + 273.15
+	local p1   = 1013.25
+	local dpow = 1.0 / 5.256
+	local alti = ((p1/pres)^dpow - (p1/pres_sea)^dpow) * kt / 0.0065
 
 	return	res, temp, humi, pres, alti
 end
 
+return BME280
 return BME280
