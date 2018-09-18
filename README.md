@@ -84,8 +84,8 @@ osrs_h| Humidity oversampling
 
 command | description
 --- | ---
-res = BME280:setup(<br>sadr, mode, t_sb, filter, osrs_t, osrs_p, osrs_h) |**Setup BME280**<br>**res:** Same as return value of fa.i2c().<br><br>**sadr:** I2C slave address(7bit)<br>**mode:** Controls the sensor mode of the device.<br>**t_sb:** Controls inactive duration tstandby in normal mode.<br>**filter:** Controls the time constant of the IIR filter.<br>**osrs_t:** Controls oversampling of temperature data.<br>**osrs_p:** Controls oversampling of pressure data.<br>**osrs_h:** Controls oversampling of humidity data.
-res, temp, humi, pres, alti =<br> BME280:readData( pres_sea )  |**Read environmental value**<br>**res:** Same as return value of fa.i2c()<br>**temp:** temperature [DegC] (-45..85)<br>**humi:** humidity [%rH] (0..100)<br>**pres:** pressure [hPa] (300..1100)<br>**alti:** altitude [m]<br><br>**pres_sea:** sea-level pressure[hPa] or nil for 1013.25hPa.
+res = BME280:setup(<br>sadr, frq, mode, t_sb, filter, osrs_t, osrs_p, osrs_h) |**Setup BME280**<br>**res:** Same as return value of fa.i2c().<br><br>**sadr:** I2C slave address (7bit)<br>**frq:** I2C clock frequency. (45 or 100 or 189 or 400)<br>**mode:** Controls the sensor mode of the device.<br>**t_sb:** Controls inactive duration tstandby in normal mode.<br>**filter:** Controls the time constant of the IIR filter.<br>**osrs_t:** Controls oversampling of temperature data.<br>**osrs_p:** Controls oversampling of pressure data.<br>**osrs_h:** Controls oversampling of humidity data.
+res, temp, humi, pres, alti, thi =<br> BME280:readData( pres_sea )  |**Read environmental value**<br>**res:** Same as return value of fa.i2c()<br>**temp:** temperature [DegC] (-45..85)<br>**humi:** humidity [%rH] (0..100)<br>**pres:** pressure [hPa] (300..1100)<br>**alti:** altitude [m]<br>**thi:** temperature-humidity index [%] (0..100)<br><br>**pres_sea:** sea-level pressure[hPa] or nil for 1013.25hPa.
 
 ## Licence
 
