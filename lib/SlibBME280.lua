@@ -2,7 +2,7 @@
 -- Libraly of BME280 control for W4.00.03
 -- Copyright (c) 2018, Saya
 -- All rights reserved.
--- 2018/09/16 rev.0.08 sea level modified.
+-- 2018/09/16 rev.0.09 debug I2C & add thi
 -----------------------------------------------
 local BME280 = {
 	SADR = 0x76;
@@ -24,7 +24,7 @@ end
 function BME280:wreadt( adr, len )
 	local res = fa.i2c{ mode="start", address=self.SADR, direction="write" };
 	local res = fa.i2c{ mode="write", data=adr };
-	local res = fa.i2c{ mode="restart", address=sadr, direction="read" };
+	local res = fa.i2c{ mode="restart", address=self.SADR, direction="read" };
 	local res, str = fa.i2c{ mode="read", bytes=len, type="string" };
 	local res = fa.i2c{ mode="stop" };
 
@@ -148,7 +148,7 @@ end
 -- osrs_p:	Pressure oversampling
 -- osrs_h:	Humidity oversampling
 --
-function BME280:setup(sadr, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)
+function BME280:setup(sadr, frq, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)
 	self.SADR = sadr
 	local spi3w_en = 0	-- 3-wire SPI Disable
 
@@ -156,7 +156,8 @@ function BME280:setup(sadr, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)
 	local config	= (t_sb   * 2^5) + (filter * 2^2) + spi3w_en
 	local ctrl_hum	= osrs_h
 
-	local res = self:softReset()
+	local res = fa.i2c{ mode="init", freq=frq }
+--	local res = self:softReset()
 	local res = self:write( 0xF2, ctrl_hum,
 							0xF4, ctrl_meas,
 							0xF5, config
@@ -188,6 +189,9 @@ function BME280:readData( pres_sea )
 	local pres	   = self:calibration_P( pres_raw )
 	local temp	   = self:calibration_T( temp_raw )
 	local humi	   = self:calibration_H( humi_raw )
+	local thi	   = 0.81*temp + 0.01*humi*(0.99*temp-14.3) + 46.3
+	thi = (thi>100) and 100.0 or thi
+	thi = (thi<0)	and   0.0 or thi
 
 	pres_sea = pres_sea or 1013.25
 	local kt   = temp + 273.15
@@ -195,8 +199,7 @@ function BME280:readData( pres_sea )
 	local dpow = 1.0 / 5.256
 	local alti = ((p1/pres)^dpow - (p1/pres_sea)^dpow) * kt / 0.0065
 
-	return	res, temp, humi, pres, alti
+	return	res, temp, humi, pres, alti, thi
 end
 
-return BME280
 return BME280
