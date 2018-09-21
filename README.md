@@ -65,7 +65,7 @@ filter| Filter coefficient
 3| 8
 4<br>others| 16
 
-**Controls oversampling of temperature data.**
+**Controls oversampling of temperature data**
 
 osrs_t| Temperature oversampling
 --- | ---
