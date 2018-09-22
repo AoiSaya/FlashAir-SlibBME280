@@ -1,5 +1,3 @@
-Under construction.
-
 # FlashAir-SlibBME280
 
 Lua library for BME280 environmental sensor for FlashAir.
@@ -17,17 +15,17 @@ GY-BME280 has 10korm pull-up register for SCL, SDA, CSB.
 And it has 10korm pull-down register for SD0.  
 So, register is not necessary.
 
-GY-BME280 module | FlashAir(Pin#) | Power
---- | --- | ---
-SD0 |CLK (5) |
-SCL |CMD (2) |
-SDA |DAT0(7) |
---- |DAT1(8) |
---- |DAT2(9) |
---- |DAT3(1) |
-CSB |---     |
-VCC |VCC (4) |3.3V   
-GND |VSS(3,6)|GND    
+GY-BME280 module | FlashAir(Pin#) | Power | Memo
+--- | --- | --- | ---
+SD0 |CLK (5) | |CLK pull-down in module
+SCL |CMD (2) | |SCL pull-up in module
+SDA |DAT0(7) | |SDA pull-up in module
+--- |DAT1(8) | |
+--- |DAT2(9) | |
+--- |DAT3(1) | |
+CSB |---     | |CSB pull-up in module
+VCC |VCC (4) |3.3V|   
+GND |VSS(3,6)|GND |  
 
 ## Install
 
