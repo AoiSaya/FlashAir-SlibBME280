@@ -2,7 +2,7 @@
 -- Libraly of BME280 control for W4.00.03
 -- Copyright (c) 2018, Saya
 -- All rights reserved.
--- 2018/09/16 rev.0.09 debug I2C & add thi
+-- 2018/09/22 rev.0.10 debug I2C & add thi
 -----------------------------------------------
 local BME280 = {
 	SADR = 0x76;
@@ -43,32 +43,6 @@ function BME280:softReset()
 	return res
 end
 
--- Return pressure in hPa. Output value of "963.862" equals 963.862 hPa.
-function BME280:calibration_P( adc_P )
-	local var1 = (self.TRIM.t_fine / 2.0) - 64000.0
-	local var2 = var1^2 * self.TRIM.P6 / 32768.0
-	local var2 = var2 + var1 * self.TRIM.P5 * 2.0
-	local var2 = (var2 / 4.0) + self.TRIM.P4 * 65536.0
-	local var3 = self.TRIM.P3 * var1^2 / 524288.0
-	local var1 = (var3 + self.TRIM.P2 * var1) / 524288.0
-	local var1 = (1.0 + var1 / 32768.0) * self.TRIM.P1
-
-	if (var1 == 0) then
-		pres = 300.0
-	else
-		pres = (1048576.0 - adc_P - (var2 / 4096.0)) * 6250.0 / var1
-		var1 = self.TRIM.P9 * pres^2 / 2147483648.0
-		var2 = pres * self.TRIM.P8 / 32768.0
-		pres = pres + (var1 + var2 + self.TRIM.P7) /16.0
-		pres = pres / 100.0
-
-		if ( pres< 300.0 ) then pres= 300.0 end
-		if ( pres>1100.0 ) then pres=1100.0 end
-	end
-
-	return pres
-end
-
 -- Return temperature in DegC. Output value of "51.23" equals 51.23 DegC.
 -- t_fine carries fine temperature as self.TRIM
 function BME280:calibration_T( adc_T )
@@ -98,6 +72,32 @@ function BME280:calibration_H( adc_H )
 	if ( humi>100.0 ) then humi=100.0 end
 
 	return humi
+end
+
+-- Return pressure in hPa. Output value of "963.862" equals 963.862 hPa.
+function BME280:calibration_P( adc_P )
+	local var1 = (self.TRIM.t_fine / 2.0) - 64000.0
+	local var2 = var1^2 * self.TRIM.P6 / 32768.0
+	local var2 = var2 + var1 * self.TRIM.P5 * 2.0
+	local var2 = (var2 / 4.0) + self.TRIM.P4 * 65536.0
+	local var3 = self.TRIM.P3 * var1^2 / 524288.0
+	local var1 = (var3 + self.TRIM.P2 * var1) / 524288.0
+	local var1 = (1.0 + var1 / 32768.0) * self.TRIM.P1
+
+	if (var1 == 0) then
+		pres = 300.0
+	else
+		pres = (1048576.0 - adc_P - (var2 / 4096.0)) * 6250.0 / var1
+		var1 = self.TRIM.P9 * pres^2 / 2147483648.0
+		var2 = pres * self.TRIM.P8 / 32768.0
+		pres = pres + (var1 + var2 + self.TRIM.P7) /16.0
+		pres = pres / 100.0
+
+		if ( pres< 300.0 ) then pres= 300.0 end
+		if ( pres>1100.0 ) then pres=1100.0 end
+	end
+
+	return pres
 end
 
 function BME280:readTrim()
@@ -186,9 +186,9 @@ function BME280:readData( pres_sea )
 	local pres_raw = (d[1] * 2^12) + (d[2] * 2^4) + (d[3] / 2^4)
 	local temp_raw = (d[4] * 2^12) + (d[5] * 2^4) + (d[6] / 2^4)
 	local humi_raw = (d[7] * 2^8 ) + d[8]
-	local pres	   = self:calibration_P( pres_raw )
 	local temp	   = self:calibration_T( temp_raw )
 	local humi	   = self:calibration_H( humi_raw )
+	local pres	   = self:calibration_P( pres_raw )
 	local thi	   = 0.81*temp + 0.01*humi*(0.99*temp-14.3) + 46.3
 	thi = (thi>100) and 100.0 or thi
 	thi = (thi<0)	and   0.0 or thi
