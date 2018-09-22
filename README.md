@@ -8,6 +8,9 @@ Lua library for BME280 environmental sensor for FlashAir.
 
 Tested on this GY-BME280 module with BME280 and FlashAir W-04 v4.00.03.
 
+<img src="img/BME280_front02.jpg"> <img src="img/BME280_back02.jpg" width="300">
+
+
 ## FlashAir to BME280 module connections
 
 GY-BME280 has 10korm pull-up register for SCL, SDA, CSB.  
