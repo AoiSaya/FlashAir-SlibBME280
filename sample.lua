@@ -2,7 +2,7 @@
 -- Sample of SlibBME280.lua for W4.00.03
 -- Copyright (c) 2018, Saya
 -- All rights reserved.
--- 2018/09/19 rev.0.03
+-- 2018/09/20 rev.0.04
 -----------------------------------------------
 
 local script_path = function()
@@ -25,7 +25,9 @@ local sea_lvl_press = 1013.25
 ------------------------
 local csv_text
 local res = sensor:setup(sensor_sadr, 400, 3, 0, 4, 2, 1, 5)
-sleep(40)
+--local res = sensor:setup()
+--local res = sensor:setup{sadr=sensor_sadr, frq=400, mode=3, t_sb=0, filter=4, osrs_t=2, osrs_p=1, osrs_h=5}
+
 local res, temp, humi, pres, alti, thi = sensor:readData(sea_lvl_press)
 
 if res=="OK" then

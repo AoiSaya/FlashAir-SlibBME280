@@ -2,7 +2,7 @@
 -- Libraly of BME280 control for W4.00.03
 -- Copyright (c) 2018, Saya
 -- All rights reserved.
--- 2018/09/22 rev.0.10 debug I2C & add thi
+-- 2018/09/23 rev.0.11 suport address scan & table param
 -----------------------------------------------
 local BME280 = {
 	SADR = 0x76;
@@ -33,6 +33,25 @@ function BME280:wreadt( adr, len )
 	else
 		return res
 	end
+end
+
+-- BME280 slave address scan
+function BME280:sascan( adrTbl, idAdr, id )
+	local	try_count = 5
+	local	res, dat
+
+	for i=1,try_count do
+		for j,value in ipairs(adrTbl) do
+			self.SADR = value
+			res, dat = self:wreadt( idAdr, 1 )
+			if type(dat)=="table" and dat[1]==id then
+				return value
+			end
+			sleep(1)
+		end
+	end
+
+	return res
 end
 
 -- BME280 Soft reset
@@ -149,7 +168,23 @@ end
 -- osrs_h:	Humidity oversampling
 --
 function BME280:setup(sadr, frq, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)
+	local res
+
+	if type(sadr)=="table" then
+		local frq, mode, t_sb, filter	 = sadr.frq, sadr.mode, sadr.t_sb, sadr.filter
+		local osrs_t, osrs_p, osrs_h = sadr.osrs_t, sadr.osrs_p, sadr.osrs_h
+		sadr = sadr.sadr
+	end
+
 	self.SADR = sadr
+	frq		= frq	 or 400
+	mode	= mode	 or 3
+	t_sb	= t_sb	 or 0
+	filter	= filter or 4
+	osrs_t	= osrs_t or 2
+	osrs_p	= osrs_p or 1
+	osrs_h	= osrs_h or 5
+
 	local spi3w_en = 0	-- 3-wire SPI Disable
 
 	local ctrl_meas = (osrs_t * 2^5) + (osrs_p * 2^2) + mode
@@ -157,12 +192,21 @@ function BME280:setup(sadr, frq, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)
 	local ctrl_hum	= osrs_h
 
 	local res = fa.i2c{ mode="init", freq=frq }
---	local res = self:softReset()
-	local res = self:write( 0xF2, ctrl_hum,
-							0xF4, ctrl_meas,
-							0xF5, config
+
+   	if not self.SADR then
+		local sadr = self:sascan( {0x76,0x77}, 0xD0, 0x60 )
+		if type(sadr)~="number" then
+			return "Slave address scan failed"
+		end
+		self.SADR=sadr
+	end
+	res = self:softReset()
+	res = self:write( 0xF2, ctrl_hum,
+					  0xF4, ctrl_meas,
+					  0xF5, config
 						)
-	local res = self:readTrim()
+	res = self:readTrim()
+	sleep(40)
 
 	return res
 end
