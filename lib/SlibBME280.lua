@@ -193,7 +193,7 @@ function BME280:setup(sadr, frq, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)
 
 	local res = fa.i2c{ mode="init", freq=frq }
 
-   	if not self.SADR then
+	if not self.SADR then
 		local sadr = self:sascan( {0x76,0x77}, 0xD0, 0x60 )
 		if type(sadr)~="number" then
 			return "Slave address scan failed"
