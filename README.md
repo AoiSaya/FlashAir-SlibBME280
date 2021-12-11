@@ -100,12 +100,12 @@ osrs_h| Humidity oversampling
 5<br>others| oversampling x16
 
 ## Usage
-If sadr is nil, it will scan the slave address.  
+If sadr is nil, it will scan the target address.  
 If other parameter is nil, default values is used.  
 
 command | description \<nil for default>
 --- | --- 
-res = BME280:setup(<br>sadr, frq, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)<br><br>or<br><br>res = BME280:setup{<br>sadr=xx, frq=xx, mode=xx, t_sb=xx, filter=xx,<br> osrs_t=xx, osrs_p=xx, osrs_h=xx}<br><br>*example:*<br>res = BME280:setup()|**Setup BME280**<br>**res:** Same as return value of fa.i2c().<br><br>**sadr:** I2C slave address (7bit) \<auto scan><br>**frq:** I2C clock frequency. (45 or 100 or 189 or 40) <400><br>**mode:** Controls the sensor mode of the device. <3><br>**t_sb:** Controls inactive duration tstandby in normal mode. <0><br>**filter:** Controls the time constant of the IIR filter. <4><br>**osrs_t:** Controls oversampling of temperature data. <2><br>**osrs_p:** Controls oversampling of pressure data. <1><br>**osrs_h:** Controls oversampling of humidity data. <5>
+res = BME280:setup(<br>sadr, frq, mode, t_sb, filter, osrs_t, osrs_p, osrs_h)<br><br>or<br><br>res = BME280:setup{<br>sadr=xx, frq=xx, mode=xx, t_sb=xx, filter=xx,<br> osrs_t=xx, osrs_p=xx, osrs_h=xx}<br><br>*example:*<br>res = BME280:setup()|**Setup BME280**<br>**res:** Same as return value of fa.i2c().<br><br>**sadr:** I2C target address (7bit) \<auto scan><br>**frq:** I2C clock frequency. (45 or 100 or 189 or 40) <400><br>**mode:** Controls the sensor mode of the device. <3><br>**t_sb:** Controls inactive duration tstandby in normal mode. <0><br>**filter:** Controls the time constant of the IIR filter. <4><br>**osrs_t:** Controls oversampling of temperature data. <2><br>**osrs_p:** Controls oversampling of pressure data. <1><br>**osrs_h:** Controls oversampling of humidity data. <5>
 res, temp, humi, pres, alti, thi =<br> BME280:readData( pres_sea ) <br><br>*example:*<br>res, temp, humi, pres = BME280:readData() |**Read environmental value**<br>**res:** Same as return value of fa.i2c()<br>**temp:** temperature [DegC] (-45..85)<br>**humi:** humidity [%rH] (0..100)<br>**pres:** pressure [hPa] (300..1100)<br>**alti:** altitude [m]<br>**thi:** temperature-humidity index [%] (0..100)<br><br>**pres_sea:** sea-level pressure[hPa] <1013.25>
 
 ## Licence
